@@ -5,14 +5,12 @@
 from kafka import KafkaConsumer
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
+
 import json
-import subprocess
 
-
-
-# replace here with your mongodb url 
 uri = "mongodb+srv://ygroth259:yolo123@cluster0.ah6hyg7.mongodb.net/?retryWrites=true&w=majority"
-
+#Local = "mongodb://127.0.0.1:27017"
+#URL del profe = "mongodb+srv://adsoft:adsoft-sito@cluster0.kzghgph.mongodb.net/?retryWrites=true&w=majority"
 
 # Create a new client and connect to the server
 #client = MongoClient(uri, server_api=ServerApi('1'))
@@ -27,7 +25,7 @@ uri = "mongodb+srv://ygroth259:yolo123@cluster0.ah6hyg7.mongodb.net/?retryWrites
 # Connect to MongoDB and pizza_data database
 
 try:
-    client = MongoClient(uri, server_api=ServerApi('1'))
+    client = MongoClient(uri)
     client.admin.command('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")
 
@@ -36,9 +34,7 @@ try:
 except:
     print("Could not connect to MongoDB")
 
-consumer = KafkaConsumer('test',bootstrap_servers=[
-     ' my-kafka-0.my-kafka-headless.yoloogroth.svc.cluster.local:9092'
-    ])
+consumer = KafkaConsumer('test',bootstrap_servers=['my-kafka-0.my-kafka-headless.yoloogroth.svc.cluster.local:9092'])#'my-kafka-0.my-kafka-headless.kafka-adsoftsito.svc.cluster.local:9092'])
 # Parse received data from Kafka
 for msg in consumer:
     record = json.loads(msg.value)
@@ -51,8 +47,5 @@ for msg in consumer:
        print (meme_rec)
        meme_id = db.memes_info.insert_one(meme_rec)
        print("Data inserted with record ids", meme_id)
-
-       subprocess.call(['sh', './test.sh'])
-
     except:
        print("Could not insert into MongoDB")
